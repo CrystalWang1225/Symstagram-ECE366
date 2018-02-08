@@ -1,4 +1,4 @@
-# ECE160 - HW#3
+# ECE160 - HW#4
 
 Due 02/17/18 at 11:59:59PM.  
 Late submissions are subject to a 10% late penalty.  
