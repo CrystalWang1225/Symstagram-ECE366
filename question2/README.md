@@ -1,4 +1,4 @@
-## Question 2
+## Question 2 (CHECK RAW FOR GAME HISTORY)
 
 Write the SOS game that is playable by 2 players. More information can be found on: <a href="https://en.wikipedia.org/wiki/SOS_(game)">https://en.wikipedia.org/wiki/SOS_(game)</a>
 
