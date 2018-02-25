@@ -14,7 +14,7 @@ Bonus (+10):
 * Modify the computer_move function to play more intelligently on a 4x4 or 5x5 board.
 
 
-Compile Steps: make; ./main 
+Compile Steps: make
 
 Output:
 $ ./main
