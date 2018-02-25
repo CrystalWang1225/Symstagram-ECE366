@@ -1,4 +1,4 @@
-## Question 1
+## Question 1 (CHECK RAW TO SEE GAME HISTORY)
 
 Extend the tic-tac-toe game that we went over in class with the following additional requirements:
 * Split up the program into multiple logical .c and .h files.
@@ -14,7 +14,7 @@ Bonus (+10):
 * Modify the computer_move function to play more intelligently on a 4x4 or 5x5 board.
 
 
-Compile Steps: make; ./main 
+Compile Steps: make
 
 Output:
 $ ./main
