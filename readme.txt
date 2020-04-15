@@ -1,4 +1,4 @@
-Brian Chung
+
 Friend Requests subsystem deliverable
 
 NEW DELIVERABLES:
