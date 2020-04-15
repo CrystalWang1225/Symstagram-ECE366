@@ -19,6 +19,5 @@ curl localhost:4567/acceptfriendrequest -X put --data "email=chung3@cooper.edu&f
 #Get all friends of the user with "email"
 curl localhost:4567/friends?email=chung3@cooper.edu
 
- curl localhost:4567/update -X put --data "email=manny@cooper.edu&newName=Mansdfny&newPassword=pssword123&newPhone=111222333"
-
- curl localhost:4567/createPost -X post --data "postText=justtexting&email=manny@cooper.edu&id1112223333"
+#Send a post to a friend
+curl localhost:4567/sendPost -X post --data "email=chung3@cooper.edu&friendemail=manny@cooper.edu&postText=justalittletest"

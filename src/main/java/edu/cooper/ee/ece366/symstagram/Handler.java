@@ -15,7 +15,7 @@ import java.util.Optional;
 
 public class Handler {
     HashMap<String, User> userSet = new HashMap<String, User>();
-    HashMap<String,Post> postSet = new HashMap<String, Post>();
+  //  HashMap<String,Post> postSet = new HashMap<String, Post>();
 
     public Handler(){}
     Service service = new Service();
@@ -39,14 +39,16 @@ public class Handler {
         return user;
     }
 
-    public Post createPost(Request request, Response response){
-        Post post = service.createPost(
-                request.queryParams("postText"),
-                userSet.get(request.queryParams("email"))
-                );
-        postSet.put(post.getId(),post);
-        UpdateResponse(response, 200, String.valueOf(post));
-        return post;
+    public boolean sendPost(Request request, Response response){
+        User user = userSet.get(request.queryParams("email"));
+        User friend = userSet.get(request.queryParams("friendemail"));
+
+        Post post = service.sendPost(user, friend,
+                request.queryParams("postText"));
+
+
+        UpdateResponse(response, 200, post.getPostText());
+        return true;
     }
 
     public Boolean SendFriendRequest(Request request, Response response) {

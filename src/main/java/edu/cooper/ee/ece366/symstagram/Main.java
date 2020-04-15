@@ -39,7 +39,7 @@ public class Main {
         //Get all friends of a user object
         Spark.get("/friends", (request, response) -> handler.GetFriends(request, response), jsonTransformer);
 
-        Spark.post("/createPost", (request, response) -> handler.createPost(request, response), jsonTransformer);
+        Spark.post("/sendPost", (request, response) -> handler.sendPost(request, response), jsonTransformer);
 
     }
 }

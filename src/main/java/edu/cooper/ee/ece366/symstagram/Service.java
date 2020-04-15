@@ -7,10 +7,20 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.core.result.ResultIterable;
+import org.jdbi.v3.core.result.ResultIterator;
+import org.jdbi.v3.core.statement.Query;
+
 public class Service {
 
     Service(){}
 
+    private Jdbi jdbi;
+
+    Service(Jdbi jdbi){
+        this.jdbi = jdbi;
+    }
     public User createUser(String name, String password, String phone, String email) {
         User user;
         user = new User(name, password, phone, email);
@@ -31,13 +41,12 @@ public class Service {
     return post;
   }
 
-   public Boolean sendPost(User user, User friend, String postText){
+   public Post sendPost(User user, User friend, String postText){
         Post post = createPost(postText, user);
         if (user != null && friend != null){
             friend.addToPostLists(post);
-            return true;
         }
-        return false;
+       return post;
     }
 
 
@@ -70,4 +79,13 @@ public class Service {
     public ArrayList<String> getFriends(User user) {
         return user.getFriends();
     }
+    public User getUser(String email){
+        User user = jdbi.withHandle(
+                handle ->
+                        handle.select("select id, name, password, phone, email", email)
+                                .mapToBean(User.class)
+                                .one());
+        return user;
+    }
+
 }
