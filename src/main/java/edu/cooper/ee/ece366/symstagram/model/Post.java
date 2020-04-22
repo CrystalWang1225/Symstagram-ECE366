@@ -30,7 +30,7 @@ public class Post {
         this.postText = null;
         this.date = LocalDateTime.now();
         this.user = null;
-        this.id = "12345";
+        this.id =  null;
     }
     public void setDate(LocalDateTime date) {
         this.date = date;
