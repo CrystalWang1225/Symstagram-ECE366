@@ -23,6 +23,7 @@ public class User {
         this.postlists = postlists;
     }
 
+    //test comment
     //private final List organizations;
     public User(long id, String name, String password, String phone, String email){
         this.id = id;
