@@ -45,7 +45,31 @@ public class PlatformStoreImpl implements PlatformStore {
     }
 
     public User updateUser(User user, String name, String password, String phone){
-
+ 	user.setName(name);
+        user.setPassword(password);
+        user.setPhone(phone);
+        Integer id1 = jdbi.withHandle(
+                handle ->
+                        handle.createQuery("Select name from users where email = :email")
+                                .bind("email", email)
+                                .bind("name", user.getName())
+                                .mapTo(Integer.class)
+                                .one());
+        Integer id2 = jdbi.withHandle(
+                handle ->
+                        handle.createQuery("Select password from users where email = :email")
+                                .bind("email", email)
+                                .bind("password", user.getPassword())
+                                .mapTo(Integer.class)
+                                .one());
+        Integer id3 = jdbi.withHandle(
+                handle ->
+                        handle.createQuery("Select phone from users where email = :email")
+                                .bind("email", email)
+                                .bind("phone", user.getPhone())
+                                .mapTo(Integer.class)
+                                .one());
+        return user;
     }
 
     public Post createPost(Post post, User user){
