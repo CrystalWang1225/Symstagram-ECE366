@@ -38,6 +38,9 @@ public class User {
         this.password = password;
         this.phone = phone;
         this.email = email;
+//        friends.add("test1@gmail.com");
+//        friends.add("test2@gmail.com");
+//        friends.add("test3@gmail.com");
     }
 
     public String getName(){
