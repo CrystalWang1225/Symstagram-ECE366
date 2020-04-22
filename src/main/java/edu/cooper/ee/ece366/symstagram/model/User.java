@@ -11,11 +11,12 @@ public class User {
     @Expose private String phone;
     @Expose private String email;
     private long id;
-    private ArrayList<String> friendrequests = new ArrayList<String>();
-    private ArrayList<String> friends = new ArrayList<String>();
-    private ArrayList<Post> postlists = new ArrayList<Post>();
 
-    public ArrayList<Post> getPostlists() {
+    @Expose private List<User> friendrequests ;
+    @Expose private List<User> friends ;
+    @Expose private List<Post> postlists ;
+
+    public List<Post> getPostlists() {
         return postlists;
     }
 
@@ -49,8 +50,8 @@ public class User {
         return password;
     }
     public String getPhone() { return phone; }
-    public ArrayList<String> getFriendRequests() {return friendrequests;}
-    public ArrayList<String> getFriends() {return friends;}
+    public List<User> getFriendRequests() {return friendrequests;}
+    public List<User> getFriends() {return friends;}
 
     public void setID(long id) { this.id = id; }
     public long getID() {return id;}
@@ -60,9 +61,10 @@ public class User {
     public void setPhone(String phone){this.phone = phone;}
     public void setEmail(String email){this.email = email;}
 
-    public void addToFriendRequests(String email) {
+    /*public void addToFriendRequests(String email) {
         friendrequests.add(email);
     }
+    */
 
     public void addToPostLists(Post post){
         postlists.add(post);
@@ -72,9 +74,11 @@ public class User {
         friendrequests.remove(email);
     }
 
-    public void addToFriends(String email) {
+   /* public void addToFriends(String email) {
         friends.add(email);
     }
+    */
+
 
     public void removeFromFriends(String email) {
         friends.remove(email);

@@ -7,7 +7,7 @@ import edu.cooper.ee.ece366.symstagram.model.User;
 import java.util.ArrayList;
 
 public interface PlatformStore {
-    public User createUser(String name, String password, String phone, String email);
+    public User createUser(User user);
 
     public User updateUser(User user, String name, String password, String phone);
 

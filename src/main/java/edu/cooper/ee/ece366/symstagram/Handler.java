@@ -1,5 +1,6 @@
 package edu.cooper.ee.ece366.symstagram;
 
+import com.google.gson.Gson;
 import edu.cooper.ee.ece366.symstagram.model.Post;
 import edu.cooper.ee.ece366.symstagram.model.User;
 import edu.cooper.ee.ece366.symstagram.Service;
@@ -16,8 +17,14 @@ public class Handler {
     HashMap<String, User> userSet = new HashMap<String, User>();
   //  HashMap<String,Post> postSet = new HashMap<String, Post>();
 
-    public Handler(){}
-    Service service = new Service();
+    private final Service service;
+    private final Gson gson;
+
+    public Handler(Service service, Gson gson){
+        this.service = service;
+        this.gson = gson;
+    }
+
 
     public static void UpdateResponse(Response response, Integer code, String message) {
         response.status(code);

@@ -6,6 +6,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import edu.cooper.ee.ece366.symstagram.store.PlatformStoreImpl;
+import org.jdbi.v3.core.Jdbi;
+
 import edu.cooper.ee.ece366.symstagram.util.JsonTransformer;
 import spark.Spark;
 
@@ -14,6 +17,9 @@ public class Main {
         Gson gson = new Gson();
         String url = "jdbc:h2:~/testdb2";
         Connection connection = DriverManager.getConnection(url);
+        Jdbi jdbi = Jdbi.create(url);
+        PlatformStoreImpl symstagram = new PlatformStoreImpl(jdbi);
+        symstagram.poplulteDb();
         Service service = new Service();
         Handler handler = new Handler();
 
@@ -39,6 +45,7 @@ public class Main {
         //Get all friends of a user object
         Spark.get("/friends", (request, response) -> handler.GetFriends(request, response), jsonTransformer);
 
+        //send a post to a userobject
         Spark.post("/sendPost", (request, response) -> handler.sendPost(request, response), jsonTransformer);
 
     }

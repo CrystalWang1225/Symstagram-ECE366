@@ -64,8 +64,12 @@ public class PlatformStoreImpl implements PlatformStore {
         return post;
     }
 
-    public Post sendPost(User user, User friend, String postText){
-
+    public void sendPost(User user, User friend, Post post){
+        jdbi.withHandle(
+                handle ->
+                        handle.execute("INSERT INTO posts (postText, userEmail, date) values(?, ?, ?)", post.getPostText(), user.getEmail(), post.getDate())
+        );
+       return;
     }
 
     public Boolean sendFriendRequest(User user, User friend);
@@ -75,13 +79,8 @@ public class PlatformStoreImpl implements PlatformStore {
     public Boolean acceptFriendRequest(User user, User friend);
 
     public ArrayList<String> getFriends(User user){
-       return jdbi.withHandle(
-                handle ->
-                        handle.createQuery("SELECT id, name,email from users ")
-                .mapToBean(User.class)
-                .list()
 
-        );
+
     }
 
     public User getUser(String email){

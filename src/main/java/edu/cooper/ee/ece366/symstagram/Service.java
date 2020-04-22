@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import edu.cooper.ee.ece366.symstagram.store.PlatformStore;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.result.ResultIterable;
 import org.jdbi.v3.core.result.ResultIterator;
@@ -14,13 +15,25 @@ import org.jdbi.v3.core.statement.Query;
 
 public class Service {
 
-    Service(){}
+    private final PlatformStore platformStore;
 
-    private Jdbi jdbi;
+    public Service(PlatformStore platformStore){
+        this.platformStore = platformStore;
+    }
+
+    public User createUser(User user){
+        return platformStore.createUser(user);
+    }
+
+
+
+
+   /* private Jdbi jdbi;
 
     Service(Jdbi jdbi){
         this.jdbi = jdbi;
     }
+    /*
     public User createUser(String name, String password, String phone, String email) {
         User user;
         user = new User(name, password, phone, email);
@@ -87,5 +100,10 @@ public class Service {
                                 .one());
         return user;
     }
+     */
+
+
+
 
 }
+
