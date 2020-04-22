@@ -13,11 +13,14 @@ import java.util.HashMap;
 
 
 public class Handler {
+    private final Service service;
+
     HashMap<String, User> userSet = new HashMap<String, User>();
   //  HashMap<String,Post> postSet = new HashMap<String, Post>();
 
-    public Handler(){}
-    Service service = new Service();
+    public Handler(Service service){
+        this.service = service;
+    }
 
     public static void UpdateResponse(Response response, Integer code, String message) {
         response.status(code);
@@ -31,7 +34,8 @@ public class Handler {
                 request.queryParams("password"),
                 request.queryParams("phone"),
                 request.queryParams("email"));
-        userSet.put(user.getEmail(), user);
+        //userSet.put(user.getEmail(), user);
+
 
         UpdateResponse(response,200,String.valueOf(user));
 
