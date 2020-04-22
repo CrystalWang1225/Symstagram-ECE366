@@ -38,19 +38,33 @@ public class Handler {
                 request.queryParams("password"),
                 request.queryParams("phone"),
                 request.queryParams("email"));
-        userSet.put(user.getEmail(), user);
+   //     userSet.put(user.getEmail(), user);
 
         UpdateResponse(response,200,String.valueOf(user));
 
         return user;
     }
 
-    public boolean sendPost(Request request, Response response){
-        User user = userSet.get(request.queryParams("email"));
-        User friend = userSet.get(request.queryParams("friendemail"));
+    public User editInfo(Request request, Response response){
+        User user = service.getUser(request.queryParams("email"));
+        service.updateUser(
+                user,
+                request.queryParams("newName"),
+                request.queryParams("newPassword"),
+                request.queryParams("newPhone"));
+        //  userSet.put(user.getEmail(), user);
 
-        Post post = service.sendPost(user, friend,
-                request.queryParams("postText"));
+        UpdateResponse(response,200,String.valueOf(user));
+
+        return user;
+    }
+
+
+    public boolean sendPost(Request request, Response response){
+        User user =service.getUser(request.queryParams("email"));
+        User friend = service.getUser(request.queryParams("friendEmail"));
+
+       Post post =  service.sendPost(user, friend, request.queryParams("postText"));
 
 
         UpdateResponse(response, 200, post.getPostText());
@@ -101,18 +115,6 @@ public class Handler {
         UpdateResponse(response, 200, "List of friends successfully retrieved");
         return service.getFriends(user);
     }
-    public User editInfo(Request request, Response response){
-        User user = userSet.get(request.queryParams("email"));
-        service.updateUser(
-                user,
-                request.queryParams("newName"),
-                request.queryParams("newPassword"),
-                request.queryParams("newPhone"));
-        userSet.put(user.getEmail(), user);
 
-        UpdateResponse(response,200,String.valueOf(user));
-
-        return user;
-    }
 
 }

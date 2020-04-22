@@ -19,9 +19,9 @@ public class Main {
         Connection connection = DriverManager.getConnection(url);
         Jdbi jdbi = Jdbi.create(url);
         PlatformStoreImpl symstagram = new PlatformStoreImpl(jdbi);
-        symstagram.poplulteDb();
-        Service service = new Service();
-        Handler handler = new Handler();
+        symstagram.populateDb();
+        Service service = new Service(symstagram);
+        Handler handler = new Handler(service,gson);
 
         JsonTransformer jsonTransformer = new JsonTransformer();
 

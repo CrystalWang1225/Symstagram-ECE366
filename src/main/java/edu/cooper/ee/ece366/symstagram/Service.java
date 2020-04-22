@@ -21,41 +21,36 @@ public class Service {
         this.platformStore = platformStore;
     }
 
-    public User createUser(User user){
+    public User createUser(String name, String password, String phone, String email){
+        User user;
+        user = new User(name, password, phone, email);
         return platformStore.createUser(user);
     }
 
 
 
 
-   /* private Jdbi jdbi;
-
-    Service(Jdbi jdbi){
-        this.jdbi = jdbi;
-    }
-    /*
-    public User createUser(String name, String password, String phone, String email) {
-        User user;
-        user = new User(name, password, phone, email);
-        return user;
-    }
     public User updateUser(User user, String name, String password, String phone){
         user.setName(name);
         user.setPassword(password);
         user.setPhone(phone);
-        return user;
+        return platformStore.updateUser(user, name, password,phone);
     }
 
 
-    public Post createPost(String postText, User user){
+  /*  public Post createPost(String postText, User user){
     Post post;
     String id = Calendar.getInstance().toString();
     post = new Post(postText,user,id);
     return post;
   }
 
+   */
+
+
+
    public Post sendPost(User user, User friend, String postText){
-        Post post = createPost(postText, user);
+        Post post = platformStore.createPost(postText, user);
         if (user != null && friend != null){
             friend.addToPostLists(post);
         }
@@ -93,14 +88,9 @@ public class Service {
         return user.getFriends();
     }
     public User getUser(String email){
-        User user = jdbi.withHandle(
-                handle ->
-                        handle.select("select id, name, password, phone, email", email)
-                                .mapToBean(User.class)
-                                .one());
-        return user;
+        return platformStore.getUser(email);
     }
-     */
+
 
 
 
