@@ -38,6 +38,26 @@ public class Handler {
         return user;
     }
 
+    public Boolean Login(Request request, Response response) {
+        String password = request.queryParams("password");
+        String email = request.queryParams("email");
+
+        if(userSet.containsKey(email)) {
+            if (userSet.get(email).getPassword().equals(password)) {
+                UpdateResponse(response,200, "Login successful for "+userSet.get(email).getName());
+                return true;
+            }
+            else {
+                UpdateResponse(response,401, "Wrong password");
+                return false;
+            }
+        }
+        else {
+            UpdateResponse(response,401, "User with that email does not exist");
+            return false;
+        }
+    }
+
     public boolean sendPost(Request request, Response response){
         User user = userSet.get(request.queryParams("email"));
         User friend = userSet.get(request.queryParams("friendemail"));

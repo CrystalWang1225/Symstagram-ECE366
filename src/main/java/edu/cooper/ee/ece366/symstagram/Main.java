@@ -24,6 +24,8 @@ public class Main {
 
         //Create a user object (account)
         Spark.post("/register", (request, response) -> handler.Register(request, response), jsonTransformer);
+        //Login with email and password
+        Spark.post("/login", (request, response) -> handler.Login(request, response), jsonTransformer);
         //edit info of the profile
         Spark.put("/update", (request, response) -> handler.editInfo(request, response), jsonTransformer);
 
