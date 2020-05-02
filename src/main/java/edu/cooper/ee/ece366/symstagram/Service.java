@@ -15,49 +15,52 @@ import org.jdbi.v3.core.statement.Query;
 
 public class Service {
 
-    private final PlatformStore platformStore;
+    private Jdbi jdbi;
+    private PlatformStore platformStore;
 
-    public Service(PlatformStore platformStore){
+    Service(PlatformStore platformStore){
         this.platformStore = platformStore;
     }
 
-    public User createUser(String name, String password, String phone, String email){
+    public User createUser(String name, String password, String phone, String email) {
         User user;
         user = new User(name, password, phone, email);
         return platformStore.createUser(user);
     }
 
-
-
-
     public User updateUser(User user, String name, String password, String phone){
+
         user.setName(name);
         user.setPassword(password);
         user.setPhone(phone);
-        return platformStore.updateUser(user, name, password,phone);
+        return user;
     }
 
 
-  /*  public Post createPost(String postText, User user){
-    Post post;
-    String id = Calendar.getInstance().toString();
-    post = new Post(postText,user,id);
-    return post;
-  }
+    public Post sendPost(String postText, User user, User receiver){
+        Post post;
+        post = new Post(postText,user);
+        for (int i = 0; i < friends.size(); i++){
+            if (receiver.getID() == friends.get(i)){
+                return platformStore.createPost(post,user, receiver);
+            }
+        }
+        System.out.println("The receiver is not your friend!!");
+        return new Post("Nothing", null);
+    }
 
-   */
 
-
+  /*
 
    public Post sendPost(User user, User friend, String postText){
-        Post post = platformStore.createPost(postText, user);
+        Post post = createPost(postText, user);
         if (user != null && friend != null){
             friend.addToPostLists(post);
         }
        return post;
     }
 
-
+/*
 
     public Boolean sendFriendRequest(User user, User friend) {
         if(user != null && friend != null) {
@@ -88,12 +91,13 @@ public class Service {
         return user.getFriends();
     }
     public User getUser(String email){
-        return platformStore.getUser(email);
+       return platformStore.getUser(email);
     }
 
-
-
-
+ */
 
 }
 
+    public User getUser(String userEmail){
+        return platformStore.getUser(userEmail);
+    }

@@ -5,25 +5,29 @@ import edu.cooper.ee.ece366.symstagram.model.Post;
 import edu.cooper.ee.ece366.symstagram.model.User;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public interface PlatformStore {
     public User createUser(User user);
-
-    public User updateUser(User user, String name, String password, String phone);
-
-    public Post createPost(String postText, User user);
-
-    public Post sendPost(User user, User friend, String postText);
-
-    public Boolean sendFriendRequest(User user, User friend);
-
-    public ArrayList<String> getFriendRequests(User user);
-
-    public Boolean acceptFriendRequest(User user, User friend);
-
-    public ArrayList<String> getFriends(User user);
-
+    public Post createPost(Post post, User user, User friend);
+    public List<Post> getFeed(User user);
     public User getUser(String email);
+
+//    public User updateUser(User user, String name, String password, String phone);
+//
+//    public Post createPost(String postText, User user);
+//
+//    public Post sendPost(User user, User friend, String postText);
+//
+//    public Boolean sendFriendRequest(User user, User friend);
+//
+//    public ArrayList<String> getFriendRequests(User user);
+//
+//    public Boolean acceptFriendRequest(User user, User friend);
+//
+//    public ArrayList<String> getFriends(User user);
+//
+//    public User getUser(String email);
 
 
 }

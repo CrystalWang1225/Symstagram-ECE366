@@ -11,19 +11,20 @@ public class Post {
     private LocalDateTime date;
     @Expose
     private User user;
-    private String id;
+    private Integer id;
 
-    public Post(String postText, User user, LocalDateTime date, String id ){
+    public Post(String postText, User user, LocalDateTime date, Integer id ){
         this.postText = postText;
         this.date = date;
         this.user = user;
         this.id = id;
     }
 
-    public Post(String postText, User user, String id){
+    public Post(String postText, User user){
         this.postText = postText;
         this.user = user;
-        this.id = id;
+        this.date = LocalDateTime.now();
+        this.id = -1;
     }
 
     public Post(){
@@ -61,11 +62,11 @@ public class Post {
         this.user = user;
     }
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 }

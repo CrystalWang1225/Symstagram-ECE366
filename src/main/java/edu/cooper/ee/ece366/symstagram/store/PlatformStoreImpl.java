@@ -1,14 +1,19 @@
 package edu.cooper.ee.ece366.symstagram.store;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import edu.cooper.ee.ece366.symstagram.model.Post;
 import edu.cooper.ee.ece366.symstagram.model.User;
 
+import java.lang.reflect.Type;
+import java.sql.Array;
+import java.sql.Connection;
 import java.util.ArrayList;
 
 import org.jdbi.v3.core.Jdbi;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 public class PlatformStoreImpl implements PlatformStore {
@@ -24,100 +29,114 @@ public class PlatformStoreImpl implements PlatformStore {
     public void populateDb(){
         jdbi.useHandle(
                 handle -> {
-        handle.execute("Create a table if not exists users (id bigint auto_increment, name varchar(255), password varchar(255), email varchar(255), phone varchar(255), primary key(id),friends json);");
-        handle.execute("Create a table if not exists posts (id bigint auto_increment, postText varchar(255), userEmail varchar(255), friendEmail varchar(255), date datetime, primary key(id));");
-    });
-
+                    handle.execute(
+                            "create table if not exists users (id bigint auto_increment, name varchar(255), password varchar(255), email varchar(255), phone varchar(255),primary key(id), friends json, postLists json);");
+                    handle.execute("create table if not exists posts (postId bigint auto_increment, postText varchar(255), senderId bigint, receiverId bigint, date datetime, primary key(id));");
+                }
+        );
     }
+
+
     public User createUser(User user){
         String friendJson = new Gson().toJson(user.getFriends());
+
         Integer id = jdbi.withHandle(
                 handle ->
-                        handle.createUpdate("INSERT INTO users (name, password, phone, email) values (:name, :password, :phone, :email)")
+                        handle.createUpdate("INSERT INTO users (name, password, phone, email, friends) values (:name, :password, :phone, :email, :friends)")
                                 .bind("name", user.getName())
                                 .bind("password", user.getPassword())
                                 .bind("phone", user.getPhone())
                                 .bind("email", user.getEmail())
                                 .bind("friends", friendJson)
+                              //  .bind("postLists", postJson)
                                 .executeAndReturnGeneratedKeys("id")
                                 .mapTo(Integer.class)
                                 .one());
         user.setID(id);
-        return user;
 
-    }
+//TODO: implement this conversion wherever necessary
+//        Type listType = new TypeToken<ArrayList<String>>(){}.getType();
+//        ArrayList<String> friends = new Gson().fromJson(friendJson, listType);
 
-    public User updateUser(User user, String name, String email, String password, String phone){
-
-        user.setName(name);
-        user.setPassword(password);
-        user.setPhone(phone);
-        Integer id1 = jdbi.withHandle(
-                handle ->
-                        handle.createQuery("Select name from users where email = :email")
-                                .bind("email", email)
-                                .bind("name", user.getName())
-                                .mapTo(Integer.class)
-                                .one());
-        Integer id2 = jdbi.withHandle(
-                handle ->
-                        handle.createQuery("Select password from users where email = :email")
-                                .bind("email", email)
-                                .bind("password", user.getPassword())
-                                .mapTo(Integer.class)
-                                .one());
-        Integer id3 = jdbi.withHandle(
-                handle ->
-                        handle.createQuery("Select phone from users where email = :email")
-                                .bind("email", email)
-                                .bind("phone", user.getPhone())
-                                .mapTo(Integer.class)
-                                .one());
         return user;
     }
 
+/*
+    public User updateUser(User user, String name, String password, String phone) {
+
+    }
 
 
-    public Post createPost(Post post, User user){
+ */
+
+    public Post createPost(Post post, User user, User friend){
         Integer id = jdbi.withHandle(
-           handle ->
-                    handle.createUpdate("INSERT INTO posts (postText, userEmail, friendEmail,date) values (:postText, :userEmail, :friendEmail, :date)")
-                       .bind("postText", post.getPostText())
-                       .bind("userEmail", user.getEmail())
-                            .bind("friendEmail", user.getFriends())
-                       .bind("date", post.getDate())
-                        .executeAndReturnGeneratedKeys("id")
-                    .mapTo(Integer.class)
-                    .one()
+                handle ->
+                        handle.createUpdate("INSERT INTO posts (postText, senderId, receiverId, date) values (:postText, :senderId, :receiverId, :date)")
+                                .bind("postText", post.getPostText())
+                                .bind("senderId", user.getID())
+                                .bind("receiverId", friend.getID())
+                                .bind("date", post.getDate())
+                                .executeAndReturnGeneratedKeys("id")
+                                .mapTo(Integer.class)
+                                .one()
         );
 
-        post.setId(Integer.toString(id));
+        post.setId(id);
         return post;
     }
 
-    public void sendPost(User user, User friend, Post post){
-       jdbi.withHandle(
+    public Post getPost(Integer id, User user, User friend){
+        return jdbi.withHandle(
                 handle ->
-                        handle.execute("INSERT INTO posts (postText, userEmail, friendEmail date) values(?, ?, ?,?)", post.getPostText(), user.getEmail(), friend.getEmail(), post.getDate())
+                        handle.createQuery("SELECT * FROM posts where senderId = :senderId AND receiverId = :receiverId")
+                                .bind("senderId", user.getID())
+                                .bind("receiverId", friend.getID())
+                                .mapToBean(Post.class)
+                                .one()
         );
 
-       return;
     }
 
-    /*
 
-    public Boolean sendFriendRequest(User user, User friend);
+    public List<Post> getFeed(User user){
+        System.out.println(user.getID());
+        return jdbi.withHandle(
+                handle ->
+                        handle.select("SELECT postId FROM posts where senderId = ?", user.getID())
+                                .mapToBean(Post.class)
+                                .list()
+        );
+
+    }
+
+
+/*
+    public void sendPost(User user, User friend, String postText){
+
+
+    }
+
+*/
+
+    /*
+    public Boolean sendFriendRequest(User user, User friend) {};
 
     public ArrayList<String> getFriendRequests(User user);
 
     public Boolean acceptFriendRequest(User user, User friend);
 
     public ArrayList<String> getFriends(User user){
+       return jdbi.withHandle(
+                handle ->
+                        handle.createQuery("SELECT id, name,email from users ")
+                .mapToBean(User.class)
+                .list()
 
-
+        );
     }
 
-     */
+*/
 
     public User getUser(String email){
         User user = jdbi.withHandle(
@@ -127,4 +146,6 @@ public class PlatformStoreImpl implements PlatformStore {
                                 .one());
         return user;
     }
+
+
 }

@@ -7,21 +7,20 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import edu.cooper.ee.ece366.symstagram.store.PlatformStoreImpl;
-import org.jdbi.v3.core.Jdbi;
-
 import edu.cooper.ee.ece366.symstagram.util.JsonTransformer;
+import org.jdbi.v3.core.Jdbi;
 import spark.Spark;
 
 public class Main {
     public static void main(String[] args) throws SQLException {
         Gson gson = new Gson();
-        String url = "jdbc:h2:~/testdb2";
-        Connection connection = DriverManager.getConnection(url);
-        Jdbi jdbi = Jdbi.create(url);
-        PlatformStoreImpl symstagram = new PlatformStoreImpl(jdbi);
-        symstagram.populateDb();
-        Service service = new Service(symstagram);
-        Handler handler = new Handler(service,gson);
+        String url = "jdbc:mysql://localhost:3306/symstagram?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=EST";
+        Connection connection = DriverManager.getConnection(url, "test", "test");
+        Jdbi jdbi = Jdbi.create(url, "test","test");
+        PlatformStoreImpl platformStore = new PlatformStoreImpl(jdbi);
+        platformStore.populateDb();
+        Service service = new Service(platformStore);
+        Handler handler = new Handler(service);
 
         JsonTransformer jsonTransformer = new JsonTransformer();
 
@@ -30,6 +29,8 @@ public class Main {
 
         //Create a user object (account)
         Spark.post("/register", (request, response) -> handler.Register(request, response), jsonTransformer);
+        //Login with email and password
+        Spark.post("/login", (request, response) -> handler.Login(request, response), jsonTransformer);
         //edit info of the profile
         Spark.put("/update", (request, response) -> handler.editInfo(request, response), jsonTransformer);
 
@@ -45,7 +46,6 @@ public class Main {
         //Get all friends of a user object
         Spark.get("/friends", (request, response) -> handler.GetFriends(request, response), jsonTransformer);
 
-        //send a post to a userobject
         Spark.post("/sendPost", (request, response) -> handler.sendPost(request, response), jsonTransformer);
 
     }

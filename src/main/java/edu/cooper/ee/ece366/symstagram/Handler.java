@@ -1,6 +1,5 @@
 package edu.cooper.ee.ece366.symstagram;
 
-import com.google.gson.Gson;
 import edu.cooper.ee.ece366.symstagram.model.Post;
 import edu.cooper.ee.ece366.symstagram.model.User;
 import edu.cooper.ee.ece366.symstagram.Service;
@@ -14,17 +13,14 @@ import java.util.HashMap;
 
 
 public class Handler {
-    HashMap<String, User> userSet = new HashMap<String, User>();
-  //  HashMap<String,Post> postSet = new HashMap<String, Post>();
-
     private final Service service;
-    private final Gson gson;
 
-    public Handler(Service service, Gson gson){
+    HashMap<String, User> userSet = new HashMap<String, User>();
+    //  HashMap<String,Post> postSet = new HashMap<String, Post>();
+
+    public Handler(Service service){
         this.service = service;
-        this.gson = gson;
     }
-
 
     public static void UpdateResponse(Response response, Integer code, String message) {
         response.status(code);
@@ -38,33 +34,39 @@ public class Handler {
                 request.queryParams("password"),
                 request.queryParams("phone"),
                 request.queryParams("email"));
-   //     userSet.put(user.getEmail(), user);
+        //userSet.put(user.getEmail(), user);
+
 
         UpdateResponse(response,200,String.valueOf(user));
 
         return user;
     }
 
-    public User editInfo(Request request, Response response){
-        User user = service.getUser(request.queryParams("email"));
-        service.updateUser(
-                user,
-                request.queryParams("newName"),
-                request.queryParams("newPassword"),
-                request.queryParams("newPhone"));
-        //  userSet.put(user.getEmail(), user);
+    public Boolean Login(Request request, Response response) {
+        String password = request.queryParams("password");
+        String email = request.queryParams("email");
 
-        UpdateResponse(response,200,String.valueOf(user));
-
-        return user;
+        if(userSet.containsKey(email)) {
+            if (userSet.get(email).getPassword().equals(password)) {
+                UpdateResponse(response,200, "Login successful for "+userSet.get(email).getName());
+                return true;
+            }
+            else {
+                UpdateResponse(response,401, "Wrong password");
+                return false;
+            }
+        }
+        else {
+            UpdateResponse(response,401, "User with that email does not exist");
+            return false;
+        }
     }
-
 
     public boolean sendPost(Request request, Response response){
-        User user =service.getUser(request.queryParams("email"));
-        User friend = service.getUser(request.queryParams("friendEmail"));
+        User user = service.getUser(request.queryParams("email"));
+        User friend = service .getUser(request.queryParams("friendemail"));
 
-       Post post =  service.sendPost(user, friend, request.queryParams("postText"));
+        Post post = service.sendPost( request.queryParams("postText"),user, friend);
 
 
         UpdateResponse(response, 200, post.getPostText());
@@ -115,6 +117,18 @@ public class Handler {
         UpdateResponse(response, 200, "List of friends successfully retrieved");
         return service.getFriends(user);
     }
+    public User editInfo(Request request, Response response){
+        User user = userSet.get(request.queryParams("email"));
+        service.updateUser(
+                user,
+                request.queryParams("newName"),
+                request.queryParams("newPassword"),
+                request.queryParams("newPhone"));
+        userSet.put(user.getEmail(), user);
 
+        UpdateResponse(response,200,String.valueOf(user));
+
+        return user;
+    }
 
 }
