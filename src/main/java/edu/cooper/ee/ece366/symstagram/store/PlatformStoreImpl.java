@@ -14,6 +14,9 @@ import org.jdbi.v3.core.Jdbi;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+
+import static com.sun.tools.attach.VirtualMachine.list;
 
 
 public class PlatformStoreImpl implements PlatformStore {
@@ -26,18 +29,18 @@ public class PlatformStoreImpl implements PlatformStore {
 
 
 
-    public void populateDb(){
+    public void populateDb() {
         jdbi.useHandle(
                 handle -> {
-                    handle.execute(
-                            "create table if not exists users (id bigint auto_increment, name varchar(255), password varchar(255), email varchar(255), phone varchar(255),primary key(id), friends json, postLists json);");
-                    handle.execute("create table if not exists posts (postId bigint auto_increment, postText varchar(255), senderId bigint, receiverId bigint, date datetime, primary key(id));");
+                    handle.execute("create table if not exists users (id bigint auto_increment, name varchar(255), password varchar(255), email varchar(255), phone varchar(255), primary key(id), friends json, postLists json);");
+                    handle.execute("create table if not exists posts (postId bigint auto_increment, postText varchar(255), senderId bigint, receiverId bigint, date datetime, primary key(postId));");
+                    handle.execute("create table if not exists userrelations (firstUserId varchar(255), secondUserId varchar(255), relationship varchar(255), date datetime, primary key(firstUserId, secondUserId));");
                 }
         );
     }
 
 
-    public User createUser(User user){
+    public User createUser(User user) {
         String friendJson = new Gson().toJson(user.getFriends());
 
         Integer id = jdbi.withHandle(
@@ -119,33 +122,94 @@ public class PlatformStoreImpl implements PlatformStore {
 
 */
 
-    /*
-    public Boolean sendFriendRequest(User user, User friend) {};
 
-    public ArrayList<String> getFriendRequests(User user);
+    //firstuserid > seconduserid ALWAYS
+    /* Tentative relationship types:
+    1: friends
+    2: pending friend request from firstuserid to seconduserid
+    3: pending friend request from seconduserid to firstuserid
+     */
+    public void sendFriendRequest(long userID, long friendID, LocalDateTime time) {
+        if (userID > friendID) {
+            jdbi.useHandle(handle -> {
+                handle.execute("INSERT INTO userrelations (firstuserid, seconduserid, relationship, date) values (?, ?, ?, ?)", userID, friendID, 2, time);
+            });
+        }
+        else {
+            jdbi.useHandle(handle -> {
+                handle.execute("INSERT INTO userrelations (firstuserid, seconduserid, relationship, date) values (?, ?, ?, ?)", friendID, userID, 3, time);
+            });
+        }
+        return;
+    };
 
-    public Boolean acceptFriendRequest(User user, User friend);
-
-    public ArrayList<String> getFriends(User user){
-       return jdbi.withHandle(
+    public List<Long> getFriendRequests(long userId) {
+        List<Long> list1 = jdbi.withHandle(
                 handle ->
-                        handle.createQuery("SELECT id, name,email from users ")
-                .mapToBean(User.class)
-                .list()
+                        handle.createQuery("SELECT secondUserId FROM userrelations where firstUserId = :userId AND relationship = :relationship")
+                                .bind("userId", userId)
+                                .bind("relationship", 3)
+                                .mapTo(Long.class)
+                                .list());
 
-        );
+        List<Long> list2 = jdbi.withHandle(
+                handle ->
+                        handle.createQuery("SELECT firstUserId FROM userrelations where secondUserId = :userId AND relationship = :relationship")
+                                .bind("userId", userId)
+                                .bind("relationship", 2)
+                                .mapTo(Long.class)
+                                .list());
+
+        list1.addAll(list2);
+        return list1;
+    };
+
+    public Boolean acceptFriendRequest(long userId, long friendId) {
+        long firstUserId;
+        if (userId > friendId)
+            firstUserId = userId;
+        else
+            firstUserId = friendId;
+
+
+        jdbi.useHandle(handle -> {
+            handle.createUpdate("UPDATE userrelations SET relationship = :relationship WHERE firstuserid = :userId")
+                    .bind("relationship", 1)
+                    .bind("userId", firstUserId)
+                    .execute();
+        });
+
+        return true;
+    };
+
+    public List<Long> getFriends(long userId){
+       List<Long> list1 = jdbi.withHandle(
+               handle ->
+                       handle.createQuery("SELECT secondUserId FROM userrelations where firstUserId = :userId AND relationship = :relationship")
+                               .bind("userId", userId)
+                               .bind("relationship", 1)
+                               .mapTo(Long.class)
+                               .list());
+
+       List<Long> list2 = jdbi.withHandle(
+               handle ->
+                       handle.createQuery("SELECT firstUserId FROM userrelations where secondUserId = :userId AND relationship = :relationship")
+                               .bind("userId", userId)
+                               .bind("relationship", 1)
+                               .mapTo(Long.class)
+                               .list());
+       list1.addAll(list2);
+       return list1;
+
     }
-
-*/
 
     public User getUser(String email){
         User user = jdbi.withHandle(
                 handle ->
-                        handle.select("select id, name, password, phone, email", email)
+                        handle.select("select id, name, password, phone, email from users where email = ?", email)
                                 .mapToBean(User.class)
-                                .one());
+                                .first());
         return user;
     }
-
 
 }

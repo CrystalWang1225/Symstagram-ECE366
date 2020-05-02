@@ -32,6 +32,14 @@ public class User {
         this.email = email;
     };
 
+    public User(){
+        this.id = -1;
+        this.name = null;
+        this.password = null;
+        this.phone = null;
+        this.email =  null;
+    }
+
     public User(String name, String password, String phone, String email) {
         this.name = name;
         this.password = password;
