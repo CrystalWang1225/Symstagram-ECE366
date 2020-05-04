@@ -10,6 +10,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 
 public class Handler {
@@ -42,6 +43,17 @@ public class Handler {
         return user;
     }
 
+    public boolean sendPost(Request request, Response response){
+        User user = service.getUser(request.queryParams("email"));
+        User friend = service .getUser(request.queryParams("friendEmail"));
+
+        Post post = service.sendPost( request.queryParams("postText"),user, friend);
+
+
+        UpdateResponse(response, 200, post.getPostText());
+        return true;
+    }
+
     public Boolean Login(Request request, Response response) {
         String password = request.queryParams("password");
         String email = request.queryParams("email");
@@ -62,73 +74,70 @@ public class Handler {
         }
     }
 
-    public boolean sendPost(Request request, Response response){
-        User user = service.getUser(request.queryParams("email"));
-        User friend = service .getUser(request.queryParams("friendemail"));
-
-        Post post = service.sendPost( request.queryParams("postText"),user, friend);
-
-
-        UpdateResponse(response, 200, post.getPostText());
-        return true;
-    }
-
-    public Boolean SendFriendRequest(Request request, Response response) {
-        User user = userSet.get(request.queryParams("email"));
-        User friend = userSet.get(request.queryParams("friendemail"));
-        if(service.sendFriendRequest(user, friend)) {
-            UpdateResponse(response, 200, String.valueOf(user));
-            return true;
-        }
-        else {
-            UpdateResponse(response, 400, "user(s) do not exist");
-            return false;
-        }
-
-    }
-
     public String GetUsers(Request request, Response response) {
         Object[] users = userSet.entrySet().toArray();
         UpdateResponse(response, 200, "List of users successfully retrieved");
         return Arrays.toString(users);
     }
 
-    public ArrayList<String> GetFriendRequests (Request request, Response response) {
-        User user = userSet.get(request.queryParams("email"));
+
+
+
+
+
+    public Boolean SendFriendRequest(Request request, Response response) {
+        User user = service.getUser(request.queryParams("email"));
+        User friend = service.getUser(request.queryParams("friendemail"));
+        service.sendFriendRequest(user, friend);
+        UpdateResponse(response, 200, String.valueOf(user));
+        return true;
+    }
+    //
+//    public String GetUsers(Request request, Response response) {
+//        Object[] users = userSet.entrySet().toArray();
+//        UpdateResponse(response, 200, "List of users successfully retrieved");
+//        return Arrays.toString(users);
+//    }
+//
+    public List<Long> GetFriendRequests (Request request, Response response) {
+        User user = service.getUser(request.queryParams("email"));
         UpdateResponse(response, 200, "List of pending friend requests successfully retrieved");
         return service.getFriendRequests(user);
     }
 
     public Boolean AcceptFriendRequest(Request request, Response response) {
-        User user = userSet.get(request.queryParams("email"));
-        User friend = userSet.get(request.queryParams("friendemail"));
-        if(service.acceptFriendRequest(user, friend)) {
-            UpdateResponse(response, 200, String.valueOf(user));
+        User user = service.getUser(request.queryParams("email"));
+        User friend = service.getUser(request.queryParams("friendemail"));
+        List<Long> friends = service.getFriendRequests(user);
+        if(friends.contains(friend.getID())) {
+            service.acceptFriendRequest(user,friend);
             return true;
         }
-        else {
-            UpdateResponse(response, 400, "user(s) do not exist");
+        else
             return false;
-        }
     }
 
-    public ArrayList<String> GetFriends (Request request, Response response) {
-        User user = userSet.get(request.queryParams("email"));
+    public List<Long> GetFriends (Request request, Response response) {
+        User user = service.getUser(request.queryParams("email"));
         UpdateResponse(response, 200, "List of friends successfully retrieved");
         return service.getFriends(user);
     }
+
     public User editInfo(Request request, Response response){
-        User user = userSet.get(request.queryParams("email"));
+        User user =service.getUser(request.queryParams("email"));
         service.updateUser(
                 user,
                 request.queryParams("newName"),
                 request.queryParams("newPassword"),
                 request.queryParams("newPhone"));
-        userSet.put(user.getEmail(), user);
+        //  userSet.put(user.getEmail(), user);
 
         UpdateResponse(response,200,String.valueOf(user));
 
         return user;
     }
+
+
+
 
 }

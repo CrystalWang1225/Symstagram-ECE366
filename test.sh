@@ -20,4 +20,4 @@ curl localhost:4567/acceptfriendrequest -X put --data "email=chung3@cooper.edu&f
 curl localhost:4567/friends?email=chung3@cooper.edu
 
 #Send a post to a friend
-curl localhost:4567/sendPost -X post --data "email=chung3@cooper.edu&friendemail=manny@cooper.edu&postText=justalittletest"
+curl localhost:4567/sendPost -X post --data "email=chung3@cooper.edu&friendEmail=manny@cooper.edu&postText=justalittletest"

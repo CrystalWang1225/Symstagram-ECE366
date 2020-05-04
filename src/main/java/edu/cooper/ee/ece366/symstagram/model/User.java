@@ -39,6 +39,13 @@ public class User {
         this.email = email;
     }
 
+    public User(){
+        this.id = -1;
+        this.name = null;
+        this.password = null;
+        this.phone = null;
+        this.email =  null;
+    }
     public String getName(){
         return name;
     }
