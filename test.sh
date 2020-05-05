@@ -4,8 +4,8 @@ curl localhost:4567/register -X post --data "name=Brian&password=password123&pho
 #Create another user with the parameters listed below
 curl localhost:4567/register -X post --data "name=Manny&password=password123&phone=1112223333&email=manny@cooper.edu"
 
-#Login to accout
-curl localhost:4567/login -X post --data "email=chung3@cooper.edu&password=password123"
+#List all users
+curl localhost:4567/users
 
 #Send a friend request from user with parameter "email" to a friend account with parameter "friendemail"
 curl localhost:4567/sendfriendrequest -X put --data "email=manny@cooper.edu&friendemail=chung3@cooper.edu"
@@ -21,4 +21,3 @@ curl localhost:4567/friends?email=chung3@cooper.edu
 
 #Send a post to a friend
 curl localhost:4567/sendPost -X post --data "email=chung3@cooper.edu&friendEmail=manny@cooper.edu&postText=justalittletest"
-read junk

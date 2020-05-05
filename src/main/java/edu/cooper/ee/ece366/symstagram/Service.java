@@ -7,7 +7,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Optional;
 
 import edu.cooper.ee.ece366.symstagram.store.PlatformStore;
 import org.jdbi.v3.core.Jdbi;
@@ -38,7 +37,7 @@ public class Service {
         return new User();
     }
 
-    public Optional<User> getUser(String email){
+    public User getUser(String email){
         return platformStore.getUser(email);
     }
 
@@ -76,15 +75,9 @@ public class Service {
  */
 
 
-    public Boolean sendFriendRequest(User user, User friend) {
+    public void sendFriendRequest(User user, User friend) {
         LocalDateTime time = LocalDateTime.now();
-
-        if (platformStore.sendFriendRequest(user.getID(), friend.getID(), time)) {
-            return true;
-        }
-
-        else
-            return false;
+        platformStore.sendFriendRequest(user.getID(), friend.getID(), time);
     }
     public List<Long> getFriendRequests(User user) {
         return platformStore.getFriendRequests(user.getID());

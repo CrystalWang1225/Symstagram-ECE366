@@ -25,6 +25,7 @@ public class Main {
         JsonTransformer jsonTransformer = new JsonTransformer();
 
         Spark.get("/ping", (req, res) -> "OK");
+        Spark.get("/users", (request, response) -> handler.GetUsers(request, response), jsonTransformer);
 
         //Create a user object (account)
         Spark.post("/register", (request, response) -> handler.Register(request, response), jsonTransformer);

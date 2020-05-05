@@ -7,7 +7,10 @@ import spark.Request;
 import spark.Response;
 
 import java.lang.reflect.Array;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 
 public class Handler {
@@ -26,164 +29,112 @@ public class Handler {
         System.out.println(message);
     }
 
-    public Boolean Register(Request request, Response response) {
-        String name =  request.queryParams("name");
-        String password =  request.queryParams("password");
-        String phone =  request.queryParams("phone");
-        String email =  request.queryParams("email");
+    public User Register(Request request, Response response) {
+        User user = service.createUser(
+                request.queryParams("name"),
+                request.queryParams("password"),
+                request.queryParams("phone"),
+                request.queryParams("email"));
+        //userSet.put(user.getEmail(), user);
 
-        if(service.getUser(email).isPresent()) {
-            UpdateResponse(response,401, "User with that email already exists");
-            return false;
-        }
 
-        else {
-            User user = service.createUser(name, password, phone, email);
-            UpdateResponse(response, 200, "Account creation successful");
-            return true;
-        }
+        UpdateResponse(response,200,String.valueOf(user));
+
+        return user;
     }
 
     public boolean sendPost(Request request, Response response){
-        Optional<User> user = service.getUser(request.queryParams("email"));
-        Optional<User> friend = service .getUser(request.queryParams("friendEmail"));
+        User user = service.getUser(request.queryParams("email"));
+        User friend = service .getUser(request.queryParams("friendEmail"));
 
-        if(user.isEmpty() || friend.isEmpty()) {
-            UpdateResponse(response,401, "User(s) don't exist");
-            return false;
-        }
+        Post post = service.sendPost( request.queryParams("postText"),user, friend);
 
-        else {
-            Post post = service.sendPost(request.queryParams("postText"), user.get(), friend.get());
-            UpdateResponse(response, 200, post.getPostText());
-            return true;
-        }
+
+        UpdateResponse(response, 200, post.getPostText());
+        return true;
     }
 
     public Boolean Login(Request request, Response response) {
         String password = request.queryParams("password");
         String email = request.queryParams("email");
 
-        Optional<User> user = service.getUser(email);
-
-        if(password.isEmpty() || email.isEmpty()) {
-            UpdateResponse(response,401, "Fields are blank");
-            return false;
-        }
-
-        if(user.isEmpty()) {
-            UpdateResponse(response,401, "User does not exist");
-            return false;
-        }
-
-        if(!user.get().getPassword().equals(password)) {
-            UpdateResponse(response,401, "Wrong password");
-            return false;
-        }
-        else {
-            UpdateResponse(response,200, "Login successful");
-            return true;
-        }
-
-    }
-
-    public Boolean SendFriendRequest(Request request, Response response) {
-        Optional<User> user = service.getUser(request.queryParams("email"));
-        Optional<User> friend = service.getUser(request.queryParams("friendemail"));
-        List<Long> friendPendingFriendRequests = service.getFriendRequests(friend.get());
-        List<Long> userFriends = service.getFriends(user.get());
-
-        if (user.isEmpty() || friend.isEmpty()) {
-            UpdateResponse(response,401, "User(s) don't exist");
-            return false;
-        }
-
-        if (friendPendingFriendRequests.contains(user.get().getID())) {
-            UpdateResponse(response,401, "Friend request already sent");
-            return false;
-        }
-
-        if (userFriends.contains(friend.get().getID())) {
-            UpdateResponse(response,401, "Already friends with " + friend.get().getName());
-            return false;
-        }
-
-        else {
-            if(service.sendFriendRequest(user.get(), friend.get())) {
-                UpdateResponse(response, 200, "Friend request sent to " + friend.get().getName());
+        if(userSet.containsKey(email)) {
+            if (userSet.get(email).getPassword().equals(password)) {
+                UpdateResponse(response,200, "Login successful for "+userSet.get(email).getName());
                 return true;
-           }
+            }
             else {
-                UpdateResponse(response, 401, "Friend request failed to send");
+                UpdateResponse(response,401, "Wrong password");
                 return false;
             }
         }
-    }
-
-    public Boolean GetFriendRequests (Request request, Response response) {
-        Optional<User> user = service.getUser(request.queryParams("email"));
-
-        if (user.isEmpty()) {
-            UpdateResponse(response,401, "User(s) don't exist");
+        else {
+            UpdateResponse(response,401, "User with that email does not exist");
             return false;
         }
-        else {
-            System.out.println(service.getFriendRequests(user.get()));
-            UpdateResponse(response, 200, "List of pending friend requests successfully retrieved");
-            return true;
-        }
+    }
 
+    public String GetUsers(Request request, Response response) {
+        Object[] users = userSet.entrySet().toArray();
+        UpdateResponse(response, 200, "List of users successfully retrieved");
+        return Arrays.toString(users);
+    }
+
+
+
+
+
+
+    public Boolean SendFriendRequest(Request request, Response response) {
+        User user = service.getUser(request.queryParams("email"));
+        User friend = service.getUser(request.queryParams("friendemail"));
+        service.sendFriendRequest(user, friend);
+        UpdateResponse(response, 200, String.valueOf(user));
+        return true;
+    }
+    //
+//    public String GetUsers(Request request, Response response) {
+//        Object[] users = userSet.entrySet().toArray();
+//        UpdateResponse(response, 200, "List of users successfully retrieved");
+//        return Arrays.toString(users);
+//    }
+//
+    public List<Long> GetFriendRequests (Request request, Response response) {
+        User user = service.getUser(request.queryParams("email"));
+        UpdateResponse(response, 200, "List of pending friend requests successfully retrieved");
+        return service.getFriendRequests(user);
     }
 
     public Boolean AcceptFriendRequest(Request request, Response response) {
-        Optional<User> user = service.getUser(request.queryParams("email"));
-        Optional<User> friend = service.getUser(request.queryParams("friendemail"));
-        List<Long> userFriendRequests = service.getFriendRequests(user.get());
-
-        if (user.isEmpty() || friend.isEmpty()) {
-            UpdateResponse(response,401, "User(s) don't exist");
-            return false;
-        }
-
-        if(userFriendRequests.contains(friend.get().getID())) {
-            service.acceptFriendRequest(user.get(),friend.get());
-            UpdateResponse(response,401, "Friend request accepted");
+        User user = service.getUser(request.queryParams("email"));
+        User friend = service.getUser(request.queryParams("friendemail"));
+        List<Long> friends = service.getFriendRequests(user);
+        if(friends.contains(friend.getID())) {
+            service.acceptFriendRequest(user,friend);
             return true;
         }
-        else {
-            UpdateResponse(response,401, "Friend request failed to be accepted");
+        else
             return false;
-        }
     }
 
-    public Boolean GetFriends (Request request, Response response) {
-        Optional<User> user = service.getUser(request.queryParams("email"));
-        if (user.isEmpty()) {
-            UpdateResponse(response,401, "User(s) don't exist");
-            return false;
-        }
-        else {
-            UpdateResponse(response, 200, "List of friends successfully retrieved: " + service.getFriends(user.get()).toString());
-            return true;
-        }
+    public List<Long> GetFriends (Request request, Response response) {
+        User user = service.getUser(request.queryParams("email"));
+        UpdateResponse(response, 200, "List of friends successfully retrieved");
+        return service.getFriends(user);
     }
 
-    public Boolean editInfo(Request request, Response response){
-        Optional<User> user =service.getUser(request.queryParams("email"));
+    public User editInfo(Request request, Response response){
+        User user =service.getUser(request.queryParams("email"));
+        service.updateUser(
+                user,
+                request.queryParams("newName"),
+                request.queryParams("newPassword"),
+                request.queryParams("newPhone"));
+        //  userSet.put(user.getEmail(), user);
 
-        if(user.isEmpty()) {
-            UpdateResponse(response,401, "User(s) don't exist");
-            return false;
-        }
-        else {
-            service.updateUser(
-                    user.get(),
-                    request.queryParams("newName"),
-                    request.queryParams("newPassword"),
-                    request.queryParams("newPhone"));
-            UpdateResponse(response,200, "Account updated successfully for " + user.get().getName());
-            return true;
-        }
+        UpdateResponse(response,200,String.valueOf(user));
+
+        return user;
     }
 
 
