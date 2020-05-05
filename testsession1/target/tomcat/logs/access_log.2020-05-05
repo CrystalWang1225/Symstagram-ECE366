@@ -1,0 +1,6 @@
+0:0:0:0:0:0:0:1 - - [05/May/2020:17:02:14 -0400] "GET / HTTP/1.1" 200 181 http-bio-8888-exec-1 82
+0:0:0:0:0:0:0:1 - - [05/May/2020:17:02:17 -0400] "GET /login?userName=test&userPassword=test HTTP/1.1" 200 70 http-bio-8888-exec-2 8
+0:0:0:0:0:0:0:1 - - [05/May/2020:17:02:21 -0400] "GET /welcome HTTP/1.1" 200 52 http-bio-8888-exec-3 1
+0:0:0:0:0:0:0:1 - - [05/May/2020:17:13:20 -0400] "GET / HTTP/1.1" 304 - http-bio-8888-exec-5 19
+0:0:0:0:0:0:0:1 - - [05/May/2020:17:13:24 -0400] "GET /login?userName=test&userPassword=test HTTP/1.1" 200 70 http-bio-8888-exec-6 1
+0:0:0:0:0:0:0:1 - - [05/May/2020:17:13:29 -0400] "GET /welcome HTTP/1.1" 200 52 http-bio-8888-exec-8 1
