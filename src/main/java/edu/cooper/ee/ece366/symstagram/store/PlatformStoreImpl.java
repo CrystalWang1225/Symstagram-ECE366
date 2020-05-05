@@ -1,19 +1,13 @@
 package edu.cooper.ee.ece366.symstagram.store;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import edu.cooper.ee.ece366.symstagram.model.Post;
 import edu.cooper.ee.ece366.symstagram.model.User;
-
-import java.lang.reflect.Type;
-import java.sql.Array;
-import java.sql.Connection;
-import java.util.ArrayList;
 
 import org.jdbi.v3.core.Jdbi;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 
 public class PlatformStoreImpl implements PlatformStore {
@@ -41,6 +35,8 @@ public class PlatformStoreImpl implements PlatformStore {
     public User createUser(User user){
         //  String friendJson = new Gson().toJson(user.getFriends());
         // String postJson = new Gson().toJson(user.getPostLists());
+
+
         Integer id = jdbi.withHandle(
                 handle ->
                         handle.createUpdate("INSERT INTO users (name, password, phone, email) values (:name, :password, :phone, :email)")
@@ -84,12 +80,12 @@ public class PlatformStoreImpl implements PlatformStore {
 
 
 
-    public User getUser(String email){
-        User user = jdbi.withHandle(
+    public Optional<User> getUser(String email){
+        Optional<User> user = jdbi.withHandle(
                 handle ->
                         handle.select("select id, name, password, phone, email from users where email = ?", email)
                                 .mapToBean(User.class)
-                                .one());
+                                .findOne());
         return user;
     }
 
@@ -141,18 +137,29 @@ public class PlatformStoreImpl implements PlatformStore {
     2: pending friend request from firstuserid to seconduserid
     3: pending friend request from seconduserid to firstuserid
      */
-    public void sendFriendRequest(long userID, long friendID, LocalDateTime time) {
+    public Boolean sendFriendRequest(long userID, long friendID, LocalDateTime time) {
         if (userID > friendID) {
-            jdbi.useHandle(handle -> {
-                handle.execute("INSERT INTO userrelations (firstuserid, seconduserid, relationship, date) values (?, ?, ?, ?)", userID, friendID, 2, time);
-            });
+            try {
+                jdbi.useHandle(handle -> {
+                    handle.execute("INSERT INTO userrelations (firstuserid, seconduserid, relationship, date) values (?, ?, ?, ?)", userID, friendID, 2, time);
+                });
+                return true;
+            }
+            catch (Exception e) {
+                return false;
+            }
         }
         else {
-            jdbi.useHandle(handle -> {
-                handle.execute("INSERT INTO userrelations (firstuserid, seconduserid, relationship, date) values (?, ?, ?, ?)", friendID, userID, 3, time);
-            });
+            try {
+                jdbi.useHandle(handle -> {
+                    handle.execute("INSERT INTO userrelations (firstuserid, seconduserid, relationship, date) values (?, ?, ?, ?)", friendID, userID, 3, time);
+                });
+                return true;
+            }
+            catch (Exception e) {
+                return false;
+            }
         }
-        return;
     };
 
     public List<Long> getFriendRequests(long userId) {
