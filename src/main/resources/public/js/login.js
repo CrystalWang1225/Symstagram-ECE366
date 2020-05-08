@@ -123,7 +123,7 @@ class GuestGreeting extends React.Component{
     }
         }
 
-
+/*
     Class Login extends React.Component {
         constructor(props) {
         super(props);
@@ -160,3 +160,5 @@ class GuestGreeting extends React.Component{
 
 
 
+
+ */
