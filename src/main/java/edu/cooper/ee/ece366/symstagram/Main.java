@@ -8,6 +8,7 @@ import java.sql.SQLException;
 
 import edu.cooper.ee.ece366.symstagram.store.PlatformStoreImpl;
 import edu.cooper.ee.ece366.symstagram.util.JsonTransformer;
+import edu.cooper.ee.ece366.symstagram.handler.HandlerIsolatedBackEndImpl;
 import org.jdbi.v3.core.Jdbi;
 import spark.Spark;
 
@@ -20,17 +21,18 @@ public class Main {
         PlatformStoreImpl platformStore = new PlatformStoreImpl(jdbi);
         platformStore.populateDb();
         Service service = new Service(platformStore);
-        Handler handler = new Handler(service);
+        HandlerIsolatedBackEndImpl handler = new HandlerIsolatedBackEndImpl(service);
 
         JsonTransformer jsonTransformer = new JsonTransformer();
 
         Spark.get("/ping", (req, res) -> "OK");
-        Spark.get("/users", (request, response) -> handler.GetUsers(request, response), jsonTransformer);
 
         //Create a user object (account)
         Spark.post("/register", (request, response) -> handler.Register(request, response), jsonTransformer);
         //Login with email and password
         Spark.post("/login", (request, response) -> handler.Login(request, response), jsonTransformer);
+        //Logout from a session
+        Spark.get("/logout", (request, response) -> handler.Logout(request, response), jsonTransformer);
         //edit info of the profile
         Spark.put("/update", (request, response) -> handler.editInfo(request, response), jsonTransformer);
 
@@ -41,7 +43,7 @@ public class Main {
         Spark.get("/getfriendrequests", (request, response) -> handler.GetFriendRequests(request, response), jsonTransformer);
 
         //Accept a single friend request
-        Spark.put("/acceptfriendrequest", (request, response) -> handler.AcceptFriendRequest(request, response), jsonTransformer);
+        Spark.put("/respondtofriendrequest", (request, response) -> handler.RespondtoFriendRequest(request, response), jsonTransformer);
 
         //Get all friends of a user object
         Spark.get("/friends", (request, response) -> handler.GetFriends(request, response), jsonTransformer);
