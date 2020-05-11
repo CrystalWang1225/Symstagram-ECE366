@@ -38,7 +38,7 @@ class App extends React.Component {
     componentDidMount() {
         fetch("http://localhost:4567/register",{
             method: 'POST',
-            body: key = name
+
         })
             .then(res => res.json())
             .then(
