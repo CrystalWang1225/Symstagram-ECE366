@@ -1,5 +1,6 @@
 
 package edu.cooper.ee.ece366.symstagram.handler;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import edu.cooper.ee.ece366.symstagram.Service;
@@ -8,7 +9,7 @@ import edu.cooper.ee.ece366.symstagram.model.User;
 import spark.Request;
 import spark.Response;
 
-        import java.util.*;
+import java.util.*;
 
 public class HandlerFullSystemImpl implements Handler {
     private final Service service;
@@ -30,11 +31,11 @@ public class HandlerFullSystemImpl implements Handler {
 
     @Override
     public Boolean Register(Request request, Response response) {
-        JsonObject reqObj = new Gson().fromJson(request.body(), JsonObject.class);
-        String name = reqObj.get("name").getAsString();
-        String password = reqObj.get("password").getAsString();
-        String phone = reqObj.get("phone").getAsString();
-        String email = reqObj.get("email").getAsString();
+        JsonObject requestObject = new Gson().fromJson(request.body(), JsonObject.class);
+        String name = requestObject.get("name").getAsString();
+        String password = requestObject.get("password").getAsString();
+        String phone = requestObject.get("phone").getAsString();
+        String email =  requestObject.get("email").getAsString();
 
         if(name.isEmpty() || password.isEmpty() || phone.isEmpty() || email.isEmpty()) {
             UpdateResponse(response,401, "Fields are blank");
@@ -48,45 +49,24 @@ public class HandlerFullSystemImpl implements Handler {
 
         else {
             User user = service.createUser(name, password, phone, email);
-            UpdateResponse(response, 200, "Account creation successful");
-          /*  response.cookie("username", user.getName());
+            response.cookie("username", user.getName());
             request.session(true);
-             request.session().attribute("id", user.getID());
+            request.session().attribute("id", user.getID());
             request.session().attribute("name", user.getName());
-            request.session().attribute("email", user.getEmail());*/
-            return true;
-        }
-    }
-
-    @Override
-    public boolean sendPost(Request request, Response response){
-        JsonObject requestObject = new Gson().fromJson(request.body(), JsonObject.class);
-        String email = requestObject.get("email").getAsString();
-        String friendemail = requestObject.get("friendemail").getAsString();
-        String posttext = requestObject.get("posttext").getAsString();
-
-        if(email.isEmpty() || friendemail.isEmpty() || posttext.isEmpty()) {
-            UpdateResponse(response,401, "Fields are blank");
-            return false;
-        }
-
-        Optional<User> user = service.getUser(email);
-        Optional<User> friend = service .getUser(friendemail);
-
-        if(user.isEmpty() || friend.isEmpty()) {
-            UpdateResponse(response,401, "User(s) don't exist");
-            return false;
-        }
-
-        else {
-            Post post = service.sendPost(posttext, user.get(), friend.get());
-            UpdateResponse(response, 200, post.getPostText());
+            request.session().attribute("email", user.getEmail());
+            UpdateResponse(response, 200, "Account creation successful");
             return true;
         }
     }
 
     @Override
     public Boolean Login(Request request, Response response) {
+
+        if(request.session().attribute("id") != null) {
+            UpdateResponse(response,401, "You are already logged in");
+            return false;
+        }
+
         JsonObject requestObject = new Gson().fromJson(request.body(), JsonObject.class);
         String email = requestObject.get("email").getAsString();
         String password = requestObject.get("password").getAsString();
@@ -111,30 +91,14 @@ public class HandlerFullSystemImpl implements Handler {
         else {
             request.session().attribute("logged in", user );
             response.cookie("sessid", request.session().id());
-            UpdateResponse(response,200, "Login successful");
             request.session().attribute("id", user.get().getID());
             request.session().attribute("name", user.get().getName());
             request.session().attribute("email", user.get().getEmail());
+            UpdateResponse(response,200, "Login successful");
             return true;
         }
 
     }
-
-    @Override
-    public Boolean getUser(Request request, Response response){
-        JsonObject reqObj = new Gson().fromJson(request.body(), JsonObject.class);
-
-        String email = request.queryParams("email");
-        if (email.isEmpty()){
-            UpdateResponse(response,401, "Field(s) are blank");
-            return false;
-        }
-        else {
-            UpdateResponse(response, 200, "User " + service.getUser(email) + " successfully retrieved");
-            return true;
-        }
-    }
-
 
     @Override
     public Boolean Logout(Request request, Response response){
@@ -148,6 +112,42 @@ public class HandlerFullSystemImpl implements Handler {
             return false;
         }
     }
+
+    @Override
+    public boolean sendPost(Request request, Response response){
+
+        if(request.session().attribute("id") == null) {
+            UpdateResponse(response,401, "You are not logged in");
+            return false;
+        }
+
+
+        JsonObject requestObject = new Gson().fromJson(request.body(), JsonObject.class);
+        String email = request.session().attribute("email");
+        String friendemail = requestObject.get("friendemail").getAsString();
+        String posttext = requestObject.get("posttext").getAsString();
+
+        if(email.isEmpty() || friendemail.isEmpty() || posttext.isEmpty()) {
+            UpdateResponse(response,401, "Fields are blank");
+            return false;
+        }
+
+        Optional<User> user = service.getUser(email);
+        Optional<User> friend = service .getUser(friendemail);
+
+        if(user.isEmpty() || friend.isEmpty()) {
+            UpdateResponse(response,401, "User(s) don't exist");
+            return false;
+        }
+
+        else {
+            Post post = service.sendPost(posttext, user.get(), friend.get());
+            UpdateResponse(response, 200, post.getPostText());
+            return true;
+        }
+    }
+
+
 
     @Override
     public Boolean SendFriendRequest(Request request, Response response) {
@@ -281,24 +281,24 @@ public class HandlerFullSystemImpl implements Handler {
         }
     }
 
-    /*   public Boolean getUser(Request request, Response response){
-           JsonObject requestObject = new Gson().fromJson(request.body(), JsonObject.class);
-           String email = requestObject.get("email").getAsString();
-           if (email.isEmpty()){
-               UpdateResponse(response,401, "Field(s) are blank");
-               return false;
-           }
-           else {
-               UpdateResponse(response, 200, "User " + service.getUser(email) + " successfully retrieved");
-               return true;
-           }
-       }
-       public Optional<User> getUser1(Request request, Response response){
-           JsonObject requestObject = new Gson().fromJson(request.body(), JsonObject.class);
-           String email = requestObject.get("email").getAsString();
-           return service.getUser(email);
-       }
-   */
+//    public Boolean GetCurrentUser(Request request, Response response) {
+//
+//    };
+
+    public User getUser(Request request, Response response){
+        //JsonObject requestObject = new Gson().fromJson(request.body(), JsonObject.class);
+        String email = request.session().attribute("email");
+        UpdateResponse(response, 200, "User " + service.getUser(email) + " successfully retrieved");
+        return service.getUser(email).get();
+
+    }
+
+//    public Optional<User> getUser1(Request request, Response response){
+//           JsonObject requestObject = new Gson().fromJson(request.body(), JsonObject.class);
+//           String email = requestObject.get("email").getAsString();
+//           return service.getUser(email);
+//       }
+
     @Override
     public Boolean editInfo(Request request, Response response){
         JsonObject requestObject = new Gson().fromJson(request.body(), JsonObject.class);

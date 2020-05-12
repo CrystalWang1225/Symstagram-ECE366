@@ -27,6 +27,8 @@ public class Main {
         HandlerFullSystemImpl handler = new HandlerFullSystemImpl(service);
         JsonTransformer jsonTransformer = new JsonTransformer();
 
+        Spark.staticFiles.header("Access-Control-Allow-Origin", "http://localhost:3003");
+
         Spark.get("/ping", (req, res) -> "OK");
 
         //Create a user object (account)
@@ -55,25 +57,29 @@ public class Main {
         Spark.put("/respondtofriendrequest", (request, response) -> handler.RespondtoFriendRequest(request, response), jsonTransformer);
         Spark.post("/sendPost", (request, response) -> handler.sendPost(request, response), jsonTransformer);
 
-        Spark.options("/*", (req, res) -> {
-            String accessControlRequestHeaders = req.headers("Access-Control-Request-Headers");
-            if (accessControlRequestHeaders != null) {
-                res.header("Access-Control-Allow-Headers", accessControlRequestHeaders);
-            }
+        Spark.options("/*",
+                (request, response) -> {
 
-            String accessControlRequestMethod = req.headers("Access-Control-Request-Method");
-            if (accessControlRequestMethod != null) {
-                res.header("Access-Control-Allow-Methods", accessControlRequestMethod);
-            }
+                    String accessControlRequestHeaders = request
+                            .headers("Access-Control-Request-Headers");
+                    if (accessControlRequestHeaders != null) {
+                        response.header("Access-Control-Allow-Headers",
+                                accessControlRequestHeaders);
+                    }
 
-            return "OK";
+                    String accessControlRequestMethod = request
+                            .headers("Access-Control-Request-Method");
+                    if (accessControlRequestMethod != null) {
+                        response.header("Access-Control-Allow-Methods",
+                                accessControlRequestMethod);
+                    }
+
+                    return "OK";
+                });
+
+        Spark.before((request, response) ->  {
+            response.header("Access-Control-Allow-Origin", "http://localhost:3003");
+            response.header("Access-Control-Allow-Credentials", "true");
         });
-
-        Spark.before((req, res) -> {
-            res.header("Access-Control-Allow-Origin", "*");
-            res.header("Access-Control-Allow-Headers", "*");
-            res.type("application/json");
-        });
-
     }
 }

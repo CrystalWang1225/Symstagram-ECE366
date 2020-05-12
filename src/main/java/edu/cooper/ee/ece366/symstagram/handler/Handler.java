@@ -1,7 +1,12 @@
 package edu.cooper.ee.ece366.symstagram.handler;
 
+import edu.cooper.ee.ece366.symstagram.model.User;
+import org.checkerframework.checker.nullness.Opt;
 import spark.Request;
 import spark.Response;
+
+import java.util.List;
+import java.util.Optional;
 
 public interface Handler {
 
@@ -21,8 +26,10 @@ public interface Handler {
 
     Boolean GetFriends(Request request, Response response);
 
+    User getUser(Request request, Response response);
+    //Optional<User> getUser(Request request, Response response);
 
-    Boolean getUser(Request request, Response response);
+       // Optional<User> getUser(Request request, Response response);
 
     /*   public Boolean getUser(Request request, Response response){
                JsonObject requestObject = new Gson().fromJson(request.body(), JsonObject.class);

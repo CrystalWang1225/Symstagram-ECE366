@@ -7,9 +7,7 @@ import edu.cooper.ee.ece366.symstagram.model.User;
 import edu.cooper.ee.ece366.symstagram.Service;
 import spark.Request;
 import spark.Response;
-import spark.Session;
 
-import javax.servlet.http.HttpSession;
 import java.util.*;
 
 public class HandlerIsolatedBackEndImpl implements Handler{
@@ -29,6 +27,7 @@ public class HandlerIsolatedBackEndImpl implements Handler{
     }
 
     @Override
+    /*
     public Boolean getUser(Request request, Response response){
         JsonObject reqObj = new Gson().fromJson(request.body(), JsonObject.class);
 
@@ -42,6 +41,35 @@ public class HandlerIsolatedBackEndImpl implements Handler{
             return true;
         }
     }
+
+
+     */
+/*
+    public Boolean getUser(Request request, Response response){
+        JsonObject reqObj = new Gson().fromJson(request.body(), JsonObject.class);
+
+        String email = reqObj.getAsString();
+        if (email.isEmpty()){
+            UpdateResponse(response,401, "Field(s) are blank");
+            return false;
+        }
+        else {
+            UpdateResponse(response, 200, "User " + service.getUser(email) + " successfully retrieved");
+            return true;
+        }
+    }
+
+ */
+
+    public User getUser(Request request, Response response) {
+        //JsonObject requestObject = new Gson().fromJson(request.body(), JsonObject.class);
+        String email = request.session().attribute("email");
+
+        UpdateResponse(response, 200, "User " + service.getUser(email) + " successfully retrieved");
+        return service.getUser(email).get();
+    }
+
+
     public Boolean Register(Request request, Response response) {
         String name =  request.queryParams("name");
         String password =  request.queryParams("password");

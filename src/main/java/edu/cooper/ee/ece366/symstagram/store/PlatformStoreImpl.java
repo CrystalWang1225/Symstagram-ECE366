@@ -82,7 +82,7 @@ public class PlatformStoreImpl implements PlatformStore {
 
 
     public Optional<User> getUser(String email){
-        Optional<User> user = jdbi.withHandle(
+         Optional<User> user = jdbi.withHandle(
                 handle ->
                         handle.select("select id, name, password, phone, email from users where email = ?", email)
                                 .mapToBean(User.class)
