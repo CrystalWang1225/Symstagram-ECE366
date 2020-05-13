@@ -1,0 +1,39 @@
+{
+  "name": "crystal-ece366-final",
+  "version": "1.0.0",
+  "description": "I developed three new main functions to introduce Friend Requests to our system:1) Send a friend request from one user object to another user object2) See a user object's pending friend requests3) Accept a pending friend request by specifying which user object the friend request came from",
+  "main": "index.js",
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.13.0",
+    "@trendmicro/react-sidenav": "^0.5.0",
+    "@types/react-dom": "^16.9.8",
+    "jquery": "^3.5.1",
+    "react": "^16.13.1",
+    "react-bootstrap": "^1.0.0-beta.16",
+    "react-dom": "^16.12.0",
+    "react-router-dom": "^5.1.2",
+    "react-scripts": "3.4.0"
+  },
+  "devDependencies": {
+    "classnames": "^2.2.6"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "react-scripts start",
+    "build": "react-scripts build"
+  },
+  "author": "crystal crystalIsBest@crystal.com",
+  "license": "UNLICENSED",
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
