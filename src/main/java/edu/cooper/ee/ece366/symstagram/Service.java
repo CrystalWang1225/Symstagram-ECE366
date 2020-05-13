@@ -98,5 +98,9 @@ public class Service {
         return platformStore.rejectFriendRequest(user.getID(), friend.getID());
     }
 
+    public List<Post> getFeed(User user ){
+        return platformStore.getFeed(user);
+    }
+
 
 }

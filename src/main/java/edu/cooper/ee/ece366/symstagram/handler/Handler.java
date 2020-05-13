@@ -1,5 +1,6 @@
 package edu.cooper.ee.ece366.symstagram.handler;
 
+import edu.cooper.ee.ece366.symstagram.model.Post;
 import edu.cooper.ee.ece366.symstagram.model.User;
 import org.checkerframework.checker.nullness.Opt;
 import spark.Request;
@@ -27,6 +28,8 @@ public interface Handler {
     Boolean GetFriends(Request request, Response response);
 
     User getUser(Request request, Response response);
+
+    List<Post> getFeed(Request request, Response response);
     //Optional<User> getUser(Request request, Response response);
 
        // Optional<User> getUser(Request request, Response response);

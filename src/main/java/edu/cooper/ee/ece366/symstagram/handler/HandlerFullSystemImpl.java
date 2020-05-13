@@ -329,4 +329,16 @@ public class HandlerFullSystemImpl implements Handler {
             return true;
         }
     }
+
+
+    public List<Post> getFeed(Request request, Response response){
+        JsonObject requestObject = new Gson().fromJson(request.body(), JsonObject.class);
+     //   String email = requestObject.get("email").getAsString();
+        String email = request.queryParams("email");
+       // long id  = service.getUser(email).get().getID();
+        UpdateResponse(response,200, "get feed successfullly" +service.getUser(email).get() );
+        return service.getFeed(service.getUser(email).get());
+    }
+
+
 }

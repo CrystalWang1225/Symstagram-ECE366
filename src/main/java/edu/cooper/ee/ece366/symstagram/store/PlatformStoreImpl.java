@@ -90,6 +90,17 @@ public class PlatformStoreImpl implements PlatformStore {
         return user;
     }
 
+
+    public List<Post> getFeed(User user){
+        return jdbi.withHandle(
+                handle ->
+                        handle.select("SELECT postId, postText, senderId, receiverId, date FROM posts where receiverId = ?", user.getID())
+                                .mapToBean(Post.class)
+                                .list()
+        );
+
+    }
+
     public Post createPost(Post post, User user, User friend){
         Integer id = jdbi.withHandle(
                 handle ->
@@ -103,11 +114,11 @@ public class PlatformStoreImpl implements PlatformStore {
                                 .one()
         );
 
-        post.setId(id);
+        post.setPostId(new Long(id));
         return post;
     }
 
-    public Post getPost(Integer id, User user, User friend){
+    public Post getPost(Long id, User user, User friend){
         return jdbi.withHandle(
                 handle ->
                         handle.createQuery("SELECT * FROM posts where senderId = :senderId AND receiverId = :receiverId")
@@ -120,16 +131,6 @@ public class PlatformStoreImpl implements PlatformStore {
     }
 
 
-    public List<Post> getFeed(User user){
-        System.out.println(user.getID());
-        return jdbi.withHandle(
-                handle ->
-                        handle.select("SELECT postId FROM posts where senderId = ?", user.getID())
-                                .mapToBean(Post.class)
-                                .list()
-        );
-
-    }
 
 
 

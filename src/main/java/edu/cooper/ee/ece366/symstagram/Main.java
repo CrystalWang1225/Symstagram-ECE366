@@ -23,7 +23,7 @@ public class Main {
         PlatformStoreImpl platformStore = new PlatformStoreImpl(jdbi);
         platformStore.populateDb();
         Service service = new Service(platformStore);
-        //Handler handler = new Handler(service);
+
         HandlerFullSystemImpl handler = new HandlerFullSystemImpl(service);
         JsonTransformer jsonTransformer = new JsonTransformer();
 
@@ -56,6 +56,8 @@ public class Main {
         //Accept a single friend request
         Spark.put("/respondtofriendrequest", (request, response) -> handler.RespondtoFriendRequest(request, response), jsonTransformer);
         Spark.post("/sendPost", (request, response) -> handler.sendPost(request, response), jsonTransformer);
+
+        Spark.get("/getfeed", (request, response) -> handler.getFeed(request, response), jsonTransformer);
 
         Spark.options("/*",
                 (request, response) -> {

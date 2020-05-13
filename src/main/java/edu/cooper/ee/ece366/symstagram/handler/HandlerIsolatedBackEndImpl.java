@@ -13,9 +13,6 @@ import java.util.*;
 public class HandlerIsolatedBackEndImpl implements Handler{
     private final Service service;
 
-    // HashMap<String, User> userSet = new HashMap<String, User>();
-    // HashMap<String,Post> postSet = new HashMap<String, Post>();
-
     public HandlerIsolatedBackEndImpl(Service service) {
         this.service = service;
     }
@@ -44,22 +41,6 @@ public class HandlerIsolatedBackEndImpl implements Handler{
 
 
      */
-/*
-    public Boolean getUser(Request request, Response response){
-        JsonObject reqObj = new Gson().fromJson(request.body(), JsonObject.class);
-
-        String email = reqObj.getAsString();
-        if (email.isEmpty()){
-            UpdateResponse(response,401, "Field(s) are blank");
-            return false;
-        }
-        else {
-            UpdateResponse(response, 200, "User " + service.getUser(email) + " successfully retrieved");
-            return true;
-        }
-    }
-
- */
 
     public User getUser(Request request, Response response) {
         //JsonObject requestObject = new Gson().fromJson(request.body(), JsonObject.class);
@@ -180,6 +161,14 @@ public class HandlerIsolatedBackEndImpl implements Handler{
             UpdateResponse(response, 200, post.getPostText());
             return true;
         }
+    }
+
+    public List<Post> getFeed(Request request, Response response){
+        JsonObject requestObject = new Gson().fromJson(request.body(), JsonObject.class);
+        //   String email = requestObject.get("email").getAsString();
+        String email = request.queryParams("email");
+        // long id  = service.getUser(email).get().getID();
+        return service.getFeed(service.getUser(email).get());
     }
 
     public Boolean SendFriendRequest(Request request, Response response) {

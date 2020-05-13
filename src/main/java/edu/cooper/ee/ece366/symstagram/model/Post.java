@@ -10,28 +10,31 @@ public class Post {
     @Expose
     private LocalDateTime date;
     @Expose
-    private User user;
-    private Integer id;
+    private Long senderId ;
+    private Long receiverId;
+    private Long postId;
 
-    public Post(String postText, User user, LocalDateTime date, Integer id ){
+
+    public Post(Long postId, String postText, Long senderId, Long receiverId){
+        this.postId = postId;
         this.postText = postText;
-        this.date = date;
-        this.user = user;
-        this.id = id;
+        this.senderId = senderId;
+        this.receiverId = receiverId;
     }
 
     public Post(String postText, User user){
+        Long postId = new Long(-1);
+        this.postId = postId;
         this.postText = postText;
-        this.user = user;
-        this.date = LocalDateTime.now();
-        this.id = -1;
+        this.senderId = user.getID();
     }
 
     public Post(){
+        this.postId = null;
         this.postText = null;
+        this.senderId = null;
+        this.receiverId = null;
         this.date = LocalDateTime.now();
-        this.user = null;
-        this.id =  null;
     }
     public void setDate(LocalDateTime date) {
         this.date = date;
@@ -54,20 +57,28 @@ public class Post {
         return date;
     }
 
-    public User getUser() {
-        return user;
+    public Long getSenderId() {
+        return senderId;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setSenderId(Long senderId) {
+        this.senderId = senderId;
     }
 
-    public Integer getId() {
-        return id;
+    public Long getReceiverId() {
+        return receiverId;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setReceiverId(Long receiverId) {
+        this.receiverId = receiverId;
+    }
+
+    public Long getPostId() {
+        return postId;
+    }
+
+    public void setPostId(Long postId) {
+        this.postId = postId;
     }
 }
 

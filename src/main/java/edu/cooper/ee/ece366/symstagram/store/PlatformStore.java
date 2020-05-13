@@ -12,7 +12,6 @@ import java.util.Optional;
 public interface PlatformStore {
     public User createUser(User user);
     public Post createPost(Post post, User user, User friend);
-    public List<Post> getFeed(User user);
     public Optional<User> getUser(String email);
     public User updateUser(User user, String name, String password, String phone, String email);
 
@@ -21,6 +20,7 @@ public interface PlatformStore {
     public Boolean acceptFriendRequest(long userId, long friendId);
     public List<Long> getFriends(long userId);
     public Boolean rejectFriendRequest(long userId, long friendId);
+    List<Post> getFeed (User user);
 //
 //    public Post createPost(String postText, User user);
 //
