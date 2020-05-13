@@ -171,6 +171,31 @@ public class HandlerIsolatedBackEndImpl implements Handler{
         return service.getFeed(service.getUser(email).get());
     }
 
+        public Boolean GetFriendRequests(Request request, Response response) {
+            JsonObject requestObject = new Gson().fromJson(request.body(), JsonObject.class);
+            String email = request.queryParams("email");
+            //String email = request.session().attribute("email");
+        /*
+        if(email.isEmpty()){
+            UpdateResponse(response,401, "Email field is blank");
+            return new List<User>;
+        }
+
+         */
+
+            Optional<User> user = service.getUser(email);
+
+            if (user.isEmpty()) {
+                UpdateResponse(response,401, "User(s) don't exist");
+                return false;
+            }
+            else {
+                System.out.println(service.getFriendRequests(user.get()));
+                UpdateResponse(response, 200, "List of pending friend requests successfully retrieved");
+                return true;
+            }
+        }
+
     public Boolean SendFriendRequest(Request request, Response response) {
 
         if(request.session().attribute("name") == null) {
@@ -220,7 +245,7 @@ public class HandlerIsolatedBackEndImpl implements Handler{
             }
         }
     }
-
+/*
     public Boolean GetFriendRequests (Request request, Response response) {
         if(request.session().attribute("id") == null) {
             UpdateResponse(response,401, "You are not logged in");
@@ -245,6 +270,8 @@ public class HandlerIsolatedBackEndImpl implements Handler{
             return true;
         }
     }
+
+ */
 
     public Boolean RespondtoFriendRequest(Request request, Response response) {
         if(request.session().attribute("id") == null) {

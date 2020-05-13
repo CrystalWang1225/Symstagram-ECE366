@@ -17,7 +17,7 @@ public class Main {
         Spark.staticFiles.location("/public");
 
         Gson gson = new Gson();
-        String url = "jdbc:mysql://localhost:3306/symstagram?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=EST";
+        String url = "jdbc:mysql://localhost:3307/symstagram?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=EST";
         Connection connection = DriverManager.getConnection(url, "test", "test");
         Jdbi jdbi = Jdbi.create(url, "test","test");
         PlatformStoreImpl platformStore = new PlatformStoreImpl(jdbi);
@@ -27,7 +27,7 @@ public class Main {
         HandlerFullSystemImpl handler = new HandlerFullSystemImpl(service);
         JsonTransformer jsonTransformer = new JsonTransformer();
 
-        Spark.staticFiles.header("Access-Control-Allow-Origin", "http://localhost:3003");
+        Spark.staticFiles.header("Access-Control-Allow-Origin", "http://localhost:3000");
 
         Spark.get("/ping", (req, res) -> "OK");
 
@@ -80,8 +80,10 @@ public class Main {
                 });
 
         Spark.before((request, response) ->  {
-            response.header("Access-Control-Allow-Origin", "http://localhost:3003");
+            response.header("Access-Control-Allow-Origin", "http://localhost:3000");
             response.header("Access-Control-Allow-Credentials", "true");
         });
+
+
     }
 }

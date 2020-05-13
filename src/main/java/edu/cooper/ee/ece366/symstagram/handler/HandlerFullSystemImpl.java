@@ -62,10 +62,13 @@ public class HandlerFullSystemImpl implements Handler {
     @Override
     public Boolean Login(Request request, Response response) {
 
+        /*
         if(request.session().attribute("id") != null) {
             UpdateResponse(response,401, "You are already logged in");
             return false;
         }
+
+         */
 
         JsonObject requestObject = new Gson().fromJson(request.body(), JsonObject.class);
         String email = requestObject.get("email").getAsString();
@@ -116,14 +119,17 @@ public class HandlerFullSystemImpl implements Handler {
     @Override
     public boolean sendPost(Request request, Response response){
 
+        /*
         if(request.session().attribute("id") == null) {
             UpdateResponse(response,401, "You are not logged in");
             return false;
         }
 
+         */
 
         JsonObject requestObject = new Gson().fromJson(request.body(), JsonObject.class);
-        String email = request.session().attribute("email");
+       // String email = request.session().attribute("email");
+        String email = requestObject.get("email").getAsString();
         String friendemail = requestObject.get("friendemail").getAsString();
         String posttext = requestObject.get("posttext").getAsString();
 
@@ -154,6 +160,8 @@ public class HandlerFullSystemImpl implements Handler {
         JsonObject requestObject = new Gson().fromJson(request.body(), JsonObject.class);
         String email = requestObject.get("email").getAsString();
         String friendemail = requestObject.get("friendemail").getAsString();
+      //  String email = request.queryParams("email");
+        //String friendemail = request.queryParams("friendemail");
 
         if(email.isEmpty() || friendemail.isEmpty()){
             UpdateResponse(response,401, "Fields are blank");
@@ -198,12 +206,15 @@ public class HandlerFullSystemImpl implements Handler {
     @Override
     public Boolean GetFriendRequests(Request request, Response response) {
         JsonObject requestObject = new Gson().fromJson(request.body(), JsonObject.class);
-        String email = requestObject.get("email").getAsString();
-
+        String email = request.queryParams("email");
+        //String email = request.session().attribute("email");
+        /*
         if(email.isEmpty()){
             UpdateResponse(response,401, "Email field is blank");
-            return false;
+            return new List<User>;
         }
+
+         */
 
         Optional<User> user = service.getUser(email);
 
@@ -214,7 +225,7 @@ public class HandlerFullSystemImpl implements Handler {
         else {
             System.out.println(service.getFriendRequests(user.get()));
             UpdateResponse(response, 200, "List of pending friend requests successfully retrieved");
-            return true;
+            return  true;
         }
     }
 
