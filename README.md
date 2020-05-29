@@ -1,4 +1,6 @@
-ECE366 Symstagram 
+# ECE366 - Software Engineering and Large System Design Project - Symstagram 
+
+This a Java web application project using Spark Framework for backend http request handling, JDBI for MySql Database, and REACT app for frontend web page
 
 How to run:
 1. Connect a mysql server on your own computer, we used MAMP at port number 3307
